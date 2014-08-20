@@ -4,7 +4,7 @@
 // @namespace      http://blog.thrsh.net
 // @author         daYOda (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.1
+// @version        2.2
 // @updateURL      https://userscripts.org/scripts/source/113906.meta.js
 // @match          http://*.bandcamp.com/
 // @match          http://*.bandcamp.com/album/*
@@ -19,7 +19,7 @@
 
 const yodUpdate = {
   script_id : 113906,
-  script_version : "2.1",
+  script_version : "2.2",
   script_pipeId : "7015d15962d94b26823e801048aae95d",
 }
 
