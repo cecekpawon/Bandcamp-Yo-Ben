@@ -15,6 +15,7 @@
 // @match          https://*.bandcamp.com/track/*
 // @match          https://*.bandcamp.com/releases*
 // @run-at         document-start
+// @grant          none
 // ==/UserScript==
 
 const yodUpdate = {
