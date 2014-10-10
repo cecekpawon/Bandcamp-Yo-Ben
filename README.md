@@ -2,6 +2,9 @@
 
 Bandcamp Yo Ben ([Bandcamp](http://Bandcamp.com) 128 download helper)
 
+## Install
+https://github.com/cecekpawon/Bandcamp-Yo-Ben/blob/master/releases/Bandcamp-Yo-Ben.user.js
+
 ## Dev
 
 [@cecekpawon](https://twitter.com/cecekpawon) / [THRSH](http://blog.thrsh.net)
