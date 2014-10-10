@@ -18,6 +18,10 @@ Force to download mass / each available tracks
 
 ## Change-log
 
+- ver 2.3 (5:44 PM 10/10/2014)
+ + Fix EOL, remove trad update, add `@updateURL` + `@downloadURL` metabblock thx @DzA24oH
+ + Add `meta.js` & bash `release.sh` generator from `tpl`
+ + Move pub to `releases` dir
 - ver 2.2 (5:44 PM 8/20/2014)
  + Rebuild from scratch
  + Github initial project
@@ -26,7 +30,7 @@ Force to download mass / each available tracks
 - ver 2.0 (12:06 PM 4/5/2014)
  + Add support bash ext ".sh / .bat"
 - ver 1.9 (2:16 PM 2/18/2014)
- + new download batch (wget + m3u) as file 
+ + new download batch (wget + m3u) as file
  + https support
 - ver 1.8 (11:00 AM 12/7/2013)
  + Add [WGET](http://www.gnu.org/software/wget/) mass downloading
@@ -43,7 +47,7 @@ Force to download mass / each available tracks
 - ver 1.2 (12:09 AM 10/5/2011)
  + Added ; Rooted domain
 - ver 1.1 (10:33 PM 9/25/2011) Initial Releases
- + Fix ; FF Aurora + Scriptish 
+ + Fix ; FF Aurora + Scriptish
  + Improve ; Better download manager file naming + track numbering
 - ver 1.0 (2:18 PM 9/25/2011) Initial Releases
  + Initial Releases

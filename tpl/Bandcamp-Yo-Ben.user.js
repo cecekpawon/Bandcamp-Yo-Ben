@@ -4,8 +4,9 @@
 // @namespace      http://blog.thrsh.net
 // @author         daYOda (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.2
-// @updateURL      https://userscripts.org/scripts/source/113906.meta.js
+// @version        {{{VERSION}}}
+// @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
+// @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
 // @match          http://*.bandcamp.com/
 // @match          http://*.bandcamp.com/album/*
 // @match          http://*.bandcamp.com/track/*
@@ -16,26 +17,6 @@
 // @match          https://*.bandcamp.com/releases*
 // @run-at         document-start
 // ==/UserScript==
-
-const yodUpdate = {
-  script_id : 113906,
-  script_version : "2.2",
-  script_pipeId : "7015d15962d94b26823e801048aae95d",
-}
-
-function usoUpdate(el) {
-  const s_CheckUpdate = "YodCheckUpdate" + yodUpdate.script_id;
-  const s_Redir = false;
-  el = el ? el : document.body;
-  if (el) {
-    if (!document.getElementById(s_CheckUpdate)) {
-      var s_gm = document.createElement("script"); s_gm.id = s_CheckUpdate; s_gm.type = "text/javascript";
-      s_gm.src = "//usoupdater.herokuapp.com/?id=" + yodUpdate.script_id + "&ver=" + yodUpdate.script_version;
-      if (s_Redir) s_gm.src += "&redir=yes";
-      el.appendChild(s_gm);
-    }
-  }
-}
 
 var _this, YODBNDCMP = function(){};
 
@@ -163,7 +144,9 @@ _this = YODBNDCMP.prototype = {
   },
 
   downloadBlob: function(id) {
-    var ta = _this.$("#" + id + "_TA"), mime = ext = "";
+    var ta = _this.$("#" + id + "_TA"),
+      mime = ext = "",
+      is_bat = _this.$v_yod_bash === "bat";
 
     if (!ta.length) return;
 
@@ -173,7 +156,7 @@ _this = YODBNDCMP.prototype = {
         ext = ".m3u";
         break;
       case "WGET":
-        mime = _this.$v_yod_bash === "bat" ? "application/x-msdos-program" : "application/x-sh";
+        mime = is_bat ? "application/x-msdos-program" : "application/x-sh";
         ext = "." + _this.$v_yod_bash;
         break;
     }
@@ -192,7 +175,7 @@ _this = YODBNDCMP.prototype = {
       .click(function(){
         window.URL = window.webkitURL || window.URL;
 
-        var val = ta.val().replace(/\n/igm, "\r\n");
+        var val = is_bat ? ta.val().replace(/\n/igm, "\r\n") : ta.val(),
           bb = new Blob([val], {type: mime}),
           href = window.URL.createObjectURL(bb);
 
@@ -256,7 +239,7 @@ _this = YODBNDCMP.prototype = {
                 _this.downloadBlob("WGET");
               });
 
-          sel_ext.find("option[value=\""+ _this.$v_yod_bash +"\"]").attr("selected", "selected");
+          sel_ext.find("option[value=\""+ _this.$v_yod_bash +"\"]").prop("selected", true);
 
           _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext"})
             .insertAfter(target)
@@ -271,7 +254,7 @@ _this = YODBNDCMP.prototype = {
             .append(
               _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox", checked: _this.$v_yod_artwork === "yes" ? "checked" : false})
                 .change(function(){
-                  _this.$v_yod_artwork = _this.$(this).attr("checked") === "checked" ? "yes" : "no";
+                  _this.$v_yod_artwork = _this.$(this).prop("checked") ? "yes" : "no";
                   _this.setValue("yod_artwork", _this.$v_yod_artwork);
                   _this.updateTA();
                 })
@@ -299,8 +282,6 @@ _this = YODBNDCMP.prototype = {
 };
 
 function doExec() {
-  usoUpdate();
-
   var $W;
 
   try {
