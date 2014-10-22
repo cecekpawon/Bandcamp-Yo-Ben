@@ -7,6 +7,7 @@
 // @version        2.3
 // @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
 // @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
+// @grant          none
 // @match          http://*.bandcamp.com/
 // @match          http://*.bandcamp.com/album/*
 // @match          http://*.bandcamp.com/track/*
