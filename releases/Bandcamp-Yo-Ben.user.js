@@ -286,14 +286,14 @@ function doExec() {
   var $W;
 
   try {
-    if (window.chrome && (unsafeWindow == window)) {
+    if ((typeof unsafeWindow !== 'undefined') && (unsafeWindow != window)) {
+      $W = unsafeWindow;
+    } else {
       $W = (function() {
         var el = document.createElement("p");
         el.setAttribute("onclick", "return window;");
         return el.onclick();
       }());
-    } else if (typeof unsafeWindow !== "undefined") {
-      $W = unsafeWindow;
     }
 
     if (typeof $W.jQuery === "undefined") {
