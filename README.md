@@ -17,11 +17,11 @@ Force to download mass / each available tracks
 
 - [Chrome](https://www.google.com/chrome/) *Ver 26.0.1410.64 above need [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)*
 - [Firefox](https://www.mozilla.org/firefox) + [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) / [Scriptish](https://addons.mozilla.org/en-US/firefox/addon/scriptish/)
-- [Opera](http://www.opera.com/) 15  / latests
+- [Opera](http://www.opera.com/) 15  / latests, need [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 
 ## Change-log
 
-- ver 2.4 (6:19 PM 5/31/2014)
+- ver 2.4 (6:19 PM 5/31/2015)
  + Use external jQuery to fix new Chrome Content Security Policy
 - ver 2.3 (5:44 PM 10/10/2014)
  + Fix EOL, remove trad update, add `@updateURL` + `@downloadURL` metabblock thx @DzA24oH
