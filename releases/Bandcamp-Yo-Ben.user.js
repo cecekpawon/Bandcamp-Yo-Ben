@@ -4,9 +4,10 @@
 // @namespace      http://blog.thrsh.net
 // @author         daYOda (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.3
+// @version        2.4
 // @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
 // @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
+// @require        http://code.jquery.com/jquery-latest.js
 // @grant          none
 // @match          http://*.bandcamp.com/
 // @match          http://*.bandcamp.com/album/*
@@ -23,6 +24,7 @@ var _this, YODBNDCMP = function(){};
 
 _this = YODBNDCMP.prototype = {
   $: {},
+  $W: window,
   $css: "\
     .yoddownAlbum .yoddown {margin-right:5px;}\
     .yoddownTrack {margin: 10px 0;}\
@@ -64,34 +66,36 @@ _this = YODBNDCMP.prototype = {
 
   //## PROG
 
-  init: function($W) {
-    _this.$ = $W.jQuery;
-    _this.$TralbumData = $W.TralbumData;
-    _this.$EmbedData = $W.EmbedData;
-    _this.$v_yod_bash = _this.getValue("yod_bash") !== "sh" ? "bat" : "sh";
+  init: function(JQ) {
+    _this.$ = JQ;
+    _this.$(document).ready(function() {
+      _this.$TralbumData = _this.$W.TralbumData;
+      _this.$EmbedData = _this.$W.EmbedData;
+      _this.$v_yod_bash = _this.getValue("yod_bash") !== "sh" ? "bat" : "sh";
 
-    _this.$("<style/>", {text: _this.$css}).appendTo("head");
+      _this.$("<style/>", {text: _this.$css}).appendTo("head");
 
-    if (!_this.$EmbedData) return;
-    if (!(_this.$TralbumData || _this.$TralbumData.trackinfo.length)) return;
+      if (!_this.$EmbedData) return;
+      if (!(_this.$TralbumData || _this.$TralbumData.trackinfo.length)) return;
 
-    _this.$is_album = _this.$TralbumData.item_type.match(/album/i) ? true : false;
-    _this.$fn = _this.$EmbedData.artist.trim() + " - ";
-    _this.$fn += _this.$EmbedData.hasOwnProperty("album_title") ? _this.$EmbedData.album_title.trim() + " - " : "";
+      _this.$is_album = _this.$TralbumData.item_type.match(/album/i) ? true : false;
+      _this.$fn = _this.$EmbedData.artist.trim() + " - ";
+      _this.$fn += _this.$EmbedData.hasOwnProperty("album_title") ? _this.$EmbedData.album_title.trim() + " - " : "";
 
-    if (_this.$is_album) {
-      _this.$("tr[class*=track_row_view][rel*=tracknum]").not(".yodparsed").each(function() {
-        if (i = parseInt(_this.$(this).attr("rel").replace(/[^0-9]/ig, ""))) {
-          _this.yodDownload(this, --i);
-        }
-      });
+      if (_this.$is_album) {
+        _this.$("tr[class*=track_row_view][rel*=tracknum]").not(".yodparsed").each(function() {
+          if (i = parseInt(_this.$(this).attr("rel").replace(/[^0-9]/ig, ""))) {
+            _this.yodDownload(this, --i);
+          }
+        });
 
-      _this.updateTA();
-    } else {
-      if (!(el = _this.elExists("ul[class*=tralbumCommands]"))) return;
-      _this.$dt += " Download this Track!";
-      _this.yodDownload(el);
-    }
+        _this.updateTA();
+      } else {
+        if (!(el = _this.elExists("ul[class*=tralbumCommands]"))) return;
+        _this.$dt += " Download this Track!";
+        _this.yodDownload(el);
+      }
+    });
   },
 
   toTA: function(target, id, val) {
@@ -145,11 +149,11 @@ _this = YODBNDCMP.prototype = {
   },
 
   downloadBlob: function(id) {
-    var ta = _this.$("#" + id + "_TA"),
-      mime = ext = "",
+    var ta,
+      mime = ext = fn = "",
       is_bat = _this.$v_yod_bash === "bat";
 
-    if (!ta.length) return;
+    if (!(ta = _this.elExists("#" + id + "_TA"))) return;
 
     switch (id) {
       case "M3U":
@@ -162,7 +166,7 @@ _this = YODBNDCMP.prototype = {
         break;
     }
 
-    var fn =  _this.$("#name-section .trackTitle").text().trim() + ext;
+    fn =  _this.$("#name-section .trackTitle").text().trim() + ext;
 
     _this.$("#yod_dl_" + id).remove();
 
@@ -174,11 +178,11 @@ _this = YODBNDCMP.prototype = {
       "download": fn
     })
       .click(function(){
-        window.URL = window.webkitURL || window.URL;
+        _this.$W.URL = _this.$W.webkitURL || _this.$W.URL;
 
         var val = is_bat ? ta.val().replace(/\n/igm, "\r\n") : ta.val(),
           bb = new Blob([val], {type: mime}),
-          href = window.URL.createObjectURL(bb);
+          href = _this.$W.URL.createObjectURL(bb);
 
         _this.$(this).attr({href: href, "data-downloadurl": [mime, fn, href].join(":")});
       })
@@ -240,7 +244,7 @@ _this = YODBNDCMP.prototype = {
                 _this.downloadBlob("WGET");
               });
 
-          sel_ext.find("option[value=\""+ _this.$v_yod_bash +"\"]").prop("selected", true);
+          sel_ext.find("option[value='"+ _this.$v_yod_bash +"']").prop("selected", true);
 
           _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext"})
             .insertAfter(target)
@@ -253,7 +257,8 @@ _this = YODBNDCMP.prototype = {
 
           _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork"})
             .append(
-              _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox", checked: _this.$v_yod_artwork === "yes" ? "checked" : false})
+              _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox"})
+                .prop("checked", _this.$v_yod_artwork === "yes")
                 .change(function(){
                   _this.$v_yod_artwork = _this.$(this).prop("checked") ? "yes" : "no";
                   _this.setValue("yod_artwork", _this.$v_yod_artwork);
@@ -283,26 +288,12 @@ _this = YODBNDCMP.prototype = {
 };
 
 function doExec() {
-  var $W;
-
   try {
-    if ((typeof unsafeWindow !== 'undefined') && (unsafeWindow != window)) {
-      $W = unsafeWindow;
+    if (jQuery) {
+      var yodBandcamp = new YODBNDCMP();
+      yodBandcamp.init(jQuery);
     } else {
-      $W = (function() {
-        var el = document.createElement("p");
-        el.setAttribute("onclick", "return window;");
-        return el.onclick();
-      }());
-    }
-
-    if (typeof $W.jQuery === "undefined") {
-      window.setTimeout(doExec, 1000);
-    } else {
-      var JQ = $W.jQuery, yodBandcamp = new YODBNDCMP(JQ);
-      JQ(document).ready(function() {
-        yodBandcamp.init($W);
-      });
+      //
     }
   } catch (e) {}
 }

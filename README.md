@@ -21,6 +21,8 @@ Force to download mass / each available tracks
 
 ## Change-log
 
+- ver 2.4 (6:19 PM 5/31/2014)
+ + Use external jQuery to fix new Chrome Content Security Policy
 - ver 2.3 (5:44 PM 10/10/2014)
  + Fix EOL, remove trad update, add `@updateURL` + `@downloadURL` metabblock thx @DzA24oH
  + Add `meta.js` & bash `release.sh` generator from `tpl`
