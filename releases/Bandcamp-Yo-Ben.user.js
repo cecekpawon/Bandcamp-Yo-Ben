@@ -246,7 +246,7 @@ _this = YODBNDCMP.prototype = {
 
           sel_ext.find("option[value='"+ _this.$v_yod_bash +"']").prop("selected", true);
 
-          _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext"})
+          _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext\t"})
             .insertAfter(target)
             .append(sel_ext);
 
@@ -255,7 +255,7 @@ _this = YODBNDCMP.prototype = {
             _this.setValue("yod_artwork", _this.$v_yod_artwork);
           }
 
-          _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork"})
+          _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork\t\t"})
             .append(
               _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox"})
                 .prop("checked", _this.$v_yod_artwork === "yes")
