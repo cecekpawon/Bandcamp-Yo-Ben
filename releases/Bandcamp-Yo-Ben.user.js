@@ -4,7 +4,7 @@
 // @namespace      http://blog.thrsh.net
 // @author         cecekpawon (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.5
+// @version        2.6
 // @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
 // @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
 // @require        http://code.jquery.com/jquery-latest.js
@@ -36,7 +36,7 @@ _this = YODBNDCMP.prototype = {
   $dt: "#",
   $WGet: "",
   $WGetCover: "",
-  $WGetBash: "#!/bin/bash\n\n",
+  $WGetBash: "#!/bin/bash\n\ncd \"`dirname \"$0\"`\"\n\n",
   $TralbumData: "",
   $EmbedData: "",
   $Protocol: location.protocol,
@@ -130,7 +130,7 @@ _this = YODBNDCMP.prototype = {
     var ta_val, ta = _this.$("#WGET_TA");
 
     if (ta_val = ta.val()) {
-      var bash_patt = new RegExp(_this.$WGetBash, "igm");
+      var bash_patt = new RegExp(_this.$WGetBash.replace(/\$/igm, "\\$"), "igm"),
         cover_patt = new RegExp(_this.$WGetCover, "igm");
 
       ta_val = ta_val.replace(bash_patt, "").replace(cover_patt, "").trim();
