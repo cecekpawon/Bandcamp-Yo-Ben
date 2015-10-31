@@ -2,9 +2,9 @@
 // ==UserScript==
 // @name           Bandcamp Yo Ben
 // @namespace      http://blog.thrsh.net
-// @author         daYOda (THRSH)
+// @author         cecekpawon (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.4
+// @version        2.5
 // @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
 // @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
 // @require        http://code.jquery.com/jquery-latest.js
@@ -39,6 +39,7 @@ _this = YODBNDCMP.prototype = {
   $WGetBash: "#!/bin/bash\n\n",
   $TralbumData: "",
   $EmbedData: "",
+  $Protocol: location.protocol,
   $v_yod_bash: "",
   $v_yod_artwork: "",
 
@@ -62,6 +63,10 @@ _this = YODBNDCMP.prototype = {
   elExists: function(s, el) {
     var e = el ? el.find(s) : _this.$(s);
     return e.length ? e : false;
+  },
+
+  fixURL: function(s) {
+    return _this.$Protocol + s.replace(/^https?\:?/i, "");
   },
 
   //## PROG
@@ -214,7 +219,7 @@ _this = YODBNDCMP.prototype = {
         t = trax.title.trim(),
         trx = trax.track_num;
 
-      f = trax.file[f].trim();
+      f = _this.fixURL(trax.file[f].trim());
       tFix = _this.fixfn(_this.$fn + t + "." + e[1], trx);
 
       var a = _this.$("<a/>", {
@@ -246,7 +251,7 @@ _this = YODBNDCMP.prototype = {
 
           sel_ext.find("option[value='"+ _this.$v_yod_bash +"']").prop("selected", true);
 
-          _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext\t"})
+          _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext"})
             .insertAfter(target)
             .append(sel_ext);
 
@@ -255,7 +260,7 @@ _this = YODBNDCMP.prototype = {
             _this.setValue("yod_artwork", _this.$v_yod_artwork);
           }
 
-          _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork\t\t"})
+          _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork"})
             .append(
               _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox"})
                 .prop("checked", _this.$v_yod_artwork === "yes")

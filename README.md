@@ -21,6 +21,8 @@ Force to download mass / each available tracks
 
 ## Change-log
 
+- ver 2.5 (11/01/2015 00:27 AM)
+ + Fix URL protocol, thx to @keihin
 - ver 2.4 (6:19 PM 5/31/2015)
  + Use external jQuery to fix new Chrome Content Security Policy
 - ver 2.3 (5:44 PM 10/10/2014)
