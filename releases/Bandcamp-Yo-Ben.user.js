@@ -4,7 +4,7 @@
 // @namespace      http://blog.thrsh.net
 // @author         cecekpawon (THRSH)
 // @description    Bandcamp.com helper
-// @version        2.6
+// @version        2.7
 // @updateURL      https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.meta.js
 // @downloadURL    https://github.com/cecekpawon/Bandcamp-Yo-Ben/raw/master/releases/Bandcamp-Yo-Ben.user.js
 // @require        http://code.jquery.com/jquery-latest.js
@@ -31,17 +31,22 @@ _this = YODBNDCMP.prototype = {
     .yoddownExt {margin: 20px 10px 0 0;display: inline-block;}\
     .TASwap {display: none; min-width: 100%;margin: 20px 0px;min-height: 200px;background: transparent;color: inherit;}\
     #yod_sel_ext_label {display: block; margin-top: 15px;}\
-    #yod_sel_ext, #yod_cb_artwork {margin-left: 10px;}\
+    .yod_label {clear: both; display: block; margin: 5px 0; cursor: pointer;}\
+    .yod_label > * {margin-left: 10px!important;}\
     ",
   $dt: "#",
   $WGet: "",
   $WGetCover: "",
-  $WGetBash: "#!/bin/bash\n\ncd \"`dirname \"$0\"`\"\n\n",
+  $WGetDateTpl: "{{DATE}}",
+  $WGetCoverTpl: "\n\n{{ARTWORK}}\n\n",
+  $WGetBashTpl: "{{BANG}}\n\n",
+  $WGetBash: "#!/bin/bash\n\ncd \"`dirname \"$0\"`\"",
   $TralbumData: "",
   $EmbedData: "",
   $Protocol: location.protocol,
   $v_yod_bash: "",
   $v_yod_artwork: "",
+  $v_yod_date: "",
 
   //## UTIL
 
@@ -83,9 +88,11 @@ _this = YODBNDCMP.prototype = {
       if (!_this.$EmbedData) return;
       if (!(_this.$TralbumData || _this.$TralbumData.trackinfo.length)) return;
 
+      _this.getDate();
+
       _this.$is_album = _this.$TralbumData.item_type.match(/album/i) ? true : false;
       _this.$fn = _this.$EmbedData.artist.trim() + " - ";
-      _this.$fn += _this.$EmbedData.hasOwnProperty("album_title") ? _this.$EmbedData.album_title.trim() + " - " : "";
+      _this.$fn += _this.$EmbedData.hasOwnProperty("album_title") ? _this.$EmbedData.album_title.trim() + _this.$WGetDateTpl + " - " : "";
 
       if (_this.$is_album) {
         _this.$("tr[class*=track_row_view][rel*=tracknum]").not(".yodparsed").each(function() {
@@ -101,6 +108,23 @@ _this = YODBNDCMP.prototype = {
         _this.yodDownload(el);
       }
     });
+  },
+
+  getDate: function() {
+    _this.$date = "";
+
+    _this.$v_yod_date = _this.getValue("yod_date") !== "yes" ? "no" : "yes";
+
+    if (d = _this.$TralbumData.album_release_date) {
+      d = new Date(d);
+      _this.$date = " (" + ((d.getMonth() + 1) + "-" + d.getDate() + "-" +  d.getFullYear()) + ")";
+    }
+  },
+
+  toDate: function(d) {
+    var date_patt = new RegExp(_this.$WGetDateTpl, "igm");
+
+    return d.replace(date_patt, (_this.$v_yod_date === "yes") ? _this.$date : "");
   },
 
   toTA: function(target, id, val) {
@@ -130,26 +154,22 @@ _this = YODBNDCMP.prototype = {
     var ta_val, ta = _this.$("#WGET_TA");
 
     if (ta_val = ta.val()) {
-      var bash_patt = new RegExp(_this.$WGetBash.replace(/\$/igm, "\\$"), "igm"),
-        cover_patt = new RegExp(_this.$WGetCover, "igm");
+      var bash_patt = new RegExp(_this.$WGetBashTpl, "igm"),
+        cover_patt = new RegExp(_this.$WGetCoverTpl, "igm");
 
-      ta_val = ta_val.replace(bash_patt, "").replace(cover_patt, "").trim();
+      ta_val = _this.$WGet
+        .replace(bash_patt, (_this.$v_yod_bash === "sh") ? _this.$WGetBash : "\n\n")
+        .replace(cover_patt, (_this.$v_yod_artwork === "yes") ? _this.$WGetCover : "\n\n")
+        .replace(/(\\n{3,})/igm, "\n\n")
+        .trim();
 
-      if (_this.$v_yod_bash === "sh") {
-        ta_val = _this.$WGetBash + ta_val;
-      }
-
-      if (_this.$v_yod_artwork === "yes") {
-        ta_val = ta_val.trim() + "\n\n" + _this.$WGetCover;
-      }
-
-      ta.val(ta_val.trim());
+      ta.val(_this.toDate(ta_val).trim());
     }
   },
 
-  toWGET: function(fn, url) {
+  toWGET: function(fn, url, ret) {
     var str = "wget -c -O \"" + fn + "\" \"" + url + "\" --no-check-certificate\n\n";
-    _this.$WGet += str;
+    if (!ret) _this.$WGet += str;
     return str;
   },
 
@@ -171,7 +191,7 @@ _this = YODBNDCMP.prototype = {
         break;
     }
 
-    fn =  _this.$("#name-section .trackTitle").text().trim() + ext;
+    fn =  _this.$("#name-section .trackTitle").text().trim() + _this.$date + ext;
 
     _this.$("#yod_dl_" + id).remove();
 
@@ -251,16 +271,28 @@ _this = YODBNDCMP.prototype = {
 
           sel_ext.find("option[value='"+ _this.$v_yod_bash +"']").prop("selected", true);
 
-          _this.$("<label/>", {id: "yod_sel_ext_label", "for": "yod_sel_ext", html: "#Download bash ext"})
+          _this.$("<label/>", {id: "yod_sel_ext_label", class: "yod_label", "for": "yod_sel_ext", html: "#Download bash ext"})
             .insertAfter(target)
             .append(sel_ext);
 
+          _this.$("<label/>", {id: "yod_date_label", class: "yod_label", "for": "yod_cb_date", html: "#Include date"})
+            .append(
+              _this.$("<input/>", {id: "yod_cb_date", type: "checkbox"})
+                .prop("checked", _this.$v_yod_date === "yes")
+                .change(function(){
+                  _this.$v_yod_date = _this.$(this).prop("checked") ? "yes" : "no";
+                  _this.setValue("yod_date", _this.$v_yod_date);
+                  _this.updateTA();
+                })
+            )
+            .insertAfter(sel_ext.parent());
+
           if (artwork = _this.elExists("#tralbumArt a img")) {
-            _this.$v_yod_artwork = _this.getValue("yod_artwork") !== "no" ? "yes" : "no";
+            _this.$v_yod_artwork = _this.getValue("yod_artwork") !== "yes" ? "no" : "yes";
             _this.setValue("yod_artwork", _this.$v_yod_artwork);
           }
 
-          _this.$("<label/>", {id: "yod_artwork_label", "for": "yod_cb_artwork", html: "#Download artwork"})
+          _this.$("<label/>", {id: "yod_artwork_label", class: "yod_label", "for": "yod_cb_artwork", html: "#Download artwork"})
             .append(
               _this.$("<input/>", {id: "yod_cb_artwork", type: "checkbox"})
                 .prop("checked", _this.$v_yod_artwork === "yes")
@@ -279,10 +311,9 @@ _this = YODBNDCMP.prototype = {
 
         // WGET //
         if (!_this.$WGet) {
-          if (_this.v_yod_bash === "sh") _this.$WGet += _this.$WGetBash;
-          if (artwork) {
-            _this.$WGetCover = _this.toWGET(_this.fixfn(_this.$fn) + " artwork.jpg", artwork.parent().attr("href")).trim();
-          }
+          _this.$WGet += _this.$WGetBashTpl;
+          _this.$WGet += _this.$WGetCoverTpl;
+          _this.$WGetCover = "\n\n" + _this.toWGET(_this.fixfn(_this.$fn) + " artwork.jpg", artwork.parent().attr("href"), true);
         }
 
         _this.toWGET(tFix, f.replace(/%/gi, "%%"));
